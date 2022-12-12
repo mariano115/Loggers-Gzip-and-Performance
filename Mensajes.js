@@ -1,4 +1,7 @@
 const messageModel = require("./models/Message.model");
+const { loggerDeclaration } = require("./utils");
+
+const logger = loggerDeclaration()
 
 const getMensajes = async () => {
   return await messageModel.find();
@@ -11,6 +14,7 @@ const addMensaje = async (mensaje) => {
     console.log("Mensaje guardado", mensGuardar);
   } catch (error) {
     console.log("error", error);
+    logger.error('Fallo en la crecion de un nuevo mensaje ', error)
   }
 };
 

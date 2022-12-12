@@ -20,9 +20,13 @@ const Config = require("./config");
 const cookieParser = require("cookie-parser");
 const userModel = require("./models/User.model");
 const MongoStore = require("connect-mongo");
-const { isValidPassword } = require("./utils");
+const { isValidPassword, loggerDeclaration } = require("./utils");
+const winston = require("winston");
 const parseArgs = require("minimist");
 const { fork } = require("child_process");
+
+//loggers
+const logger = loggerDeclaration()
 
 //passport imports
 const passport = require("passport");
@@ -74,12 +78,22 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("new-product", async (data) => {
-    const products = await fakerProducts(5);
+    try {
+      const products = await fakerProducts(5);
     products.push(data);
     io.sockets.emit("products", products);
+    } catch (error) {
+      logger.error('Fallo en la creacion de productos ', error)
+      console.log(error);
+    }
+    
   });
 });
 
+app.use((req, res) => {
+  logger.warn(`Ruta Incorrecta ${req.originalUrl}`)
+  res.send(`Ruta Incorrecta ${req.originalUrl}`)
+})
 //Puerto enviado por ARGS
 /* const args = parseArgs(process.argv.slice(2)); */
 const args = parseArgs(process.argv.slice(2), {default: {PORT: '8080'}})
@@ -150,6 +164,7 @@ passport.deserializeUser((id, done) => {
 });
 
 app.get("/", auth, (req, res) => {
+  logger.info("Redireccion a ruta '/home' autenticacion Completada")
   res.redirect("/home");
 });
 
@@ -159,21 +174,24 @@ app.post(
     failureRedirect: "/login-error",
   }),
   (req, res) => {
-    console.log("home");
+    logger.info("Peticion POST a ruta '/login'")
     req.session.email = req.body.email;
     res.redirect("/home");
   }
 );
 
 app.get("/home", auth, (req, res) => {
+  logger.info("Peticion GET a ruta '/home'")
   res.render("formulario", { email: req.session.email });
 });
 
 app.get("/register", (req, res) => {
+  logger.info("Peticion GET a ruta '/register'")
   res.render("register");
 });
 
 app.post("/register", (req, res) => {
+  logger.info("Peticion POST a ruta '/register'")
   try {
     const hashPassword = createHash(req.body.password);
     const newUser = { email: req.body.email, password: hashPassword };
@@ -188,6 +206,7 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
+  logger.info("Peticion POST a ruta '/logout'")
   req.session.destroy((err) => {
     if (err) {
       return res.json({ success: "false", error: err });
@@ -197,22 +216,27 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register-error", (req, res) => {
+  logger.info("Peticion GET a ruta '/register-error'")
   res.render("register-error");
 });
 
 app.get("/login-error", (req, res) => {
+  logger.info("Peticion GET a ruta '/login-error'")
   res.render("login-error");
 });
 
 app.get("/test-mensaje", (req, res) => {
+  logger.info("Peticion GET a ruta '/test-mensaje'")
   res.send(testNormalizr());
 });
 
 app.get("/productos-test", async (req, res) => {
+  logger.info("Peticion GET a ruta '/productos-test'")
   res.send(fakerProducts(5));
 });
 
 app.get("/info", async (req, res) => {
+  logger.info("Peticion GET a ruta '/info'")
   //La ruta info comprimida envia 946 Bytes y la ruta info sin comprimir envia 923 Bytes.
   //En este caso la compression no esta achicando mucho la informacion
   const infoData = {
@@ -229,6 +253,7 @@ app.get("/info", async (req, res) => {
 });
 
 app.get("/api/randoms", async (req, res) => {
+  logger.info("Peticion GET a ruta '/api/randoms'")
   const forked = fork("randoms.js");
 
   forked.on("message", (message) => {
@@ -240,6 +265,7 @@ app.get("/api/randoms", async (req, res) => {
 });
 
 app.get("/datos", (req, res) => {
+  logger.info("Peticion GET a ruta '/datos'")
   console.log(`port ${PORT} -> FYH ${Date.now()}`);
 
   res.send(`servidor express <span style="color:blueviolet;"> (NGINX)</span> 
