@@ -19,3 +19,7 @@ npm i autocannon --save
 npm i -g 0x
 node --prof index.js --PORT=8082
 artillery quick --count 50 -n 20 http://localhost:7979/info > result_artillery_info.txt
+
+En el test de Autocannon
+npm start
+npm test (en otra consola)
