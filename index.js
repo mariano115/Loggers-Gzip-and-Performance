@@ -90,10 +90,11 @@ io.on("connection", async (socket) => {
   });
 });
 
-app.use((req, res) => {
+/* app.use((req, res) => {
   logger.warn(`Ruta Incorrecta ${req.originalUrl}`)
   res.send(`Ruta Incorrecta ${req.originalUrl}`)
-})
+}) */
+
 //Puerto enviado por ARGS
 /* const args = parseArgs(process.argv.slice(2)); */
 const args = parseArgs(process.argv.slice(2), {default: {PORT: '8080'}})
@@ -249,6 +250,7 @@ app.get("/info", async (req, res) => {
     proyectFolder: process.cwd(),
     numThreads
   };
+  console.log('infoData', infoData);
   res.render("info", { infoData });
 });
 
