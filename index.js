@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const numThreads = require('os').cpus().length;
+const compression = require('compression');
 const { getMensajes, addMensaje } = require("./Mensajes");
 const { createUser } = require("./Users");
 const {
@@ -30,6 +31,7 @@ const LocalStrategy = Strategy;
 
 //servidor
 app.use(express.urlencoded({ extended: true }));
+app.use(compression());
 app.use(express.json());
 app.use(cors());
 
@@ -211,6 +213,8 @@ app.get("/productos-test", async (req, res) => {
 });
 
 app.get("/info", async (req, res) => {
+  //La ruta info comprimida envia 946 Bytes y la ruta info sin comprimir envia 923 Bytes.
+  //En este caso la compression no esta achicando mucho la informacion
   const infoData = {
     arguments: parseArgs(process.argv.slice(2)),
     plataform: process.platform,
