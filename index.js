@@ -90,10 +90,6 @@ io.on("connection", async (socket) => {
   });
 });
 
-app.use('*',(req, res) => {
-  logger.warn(`Ruta Incorrecta ${req.originalUrl}`)
-  res.send(`Ruta Incorrecta ${req.originalUrl}`)
-})
 
 //Puerto enviado por ARGS
 /* const args = parseArgs(process.argv.slice(2)); */
@@ -276,6 +272,10 @@ app.get("/datos", (req, res) => {
   }`);
 });
 
+app.use('*',(req, res) => {
+  logger.warn(`Ruta Incorrecta ${req.originalUrl}`)
+  res.send(`Ruta Incorrecta ${req.originalUrl}`)
+})
 
 httpServer.listen(PORT, () =>
   console.log("servidor Levantado en el puerto " + PORT)
