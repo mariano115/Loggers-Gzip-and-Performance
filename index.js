@@ -90,10 +90,10 @@ io.on("connection", async (socket) => {
   });
 });
 
-/* app.use((req, res) => {
+app.use('*',(req, res) => {
   logger.warn(`Ruta Incorrecta ${req.originalUrl}`)
   res.send(`Ruta Incorrecta ${req.originalUrl}`)
-}) */
+})
 
 //Puerto enviado por ARGS
 /* const args = parseArgs(process.argv.slice(2)); */

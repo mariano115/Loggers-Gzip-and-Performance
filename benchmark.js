@@ -20,4 +20,4 @@ inst.on('done', function(){
 }
 console.log('Running all benchmarks in parallel ...')
 
-run('http://localhost:8082/info')
+run('http://localhost:9095/info')
